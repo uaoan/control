@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uaoan Control控制终端 - 极致流畅的跨平台极客控制软件</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* MD3 风格配色与层级 */
+        :root {
+            --primary-color: #6750a4;
+            --primary-container: #eaddff;
+            --on-primary-container: #21005d;
+            --bg-dark: #141218; 
+            --surface: #211f26; 
+            --surface-variant: #49454f;
+            --on-surface: #e6e1e5;
+            --card-bg: rgba(33, 31, 38, 0.7);
+            --accent: #d0bcff;
+            --radius-large: 28px;
+            --radius-max: 9999px;
+            --elevation-2: 0 4px 8px 3px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--on-surface);
+            line-height: 1.6;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(103, 80, 164, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(208, 188, 255, 0.08) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        nav {
+            padding: 1rem 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(20, 18, 24, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
+
+        .btn-pill {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 24px;
+            border-radius: var(--radius-max);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            box-shadow: var(--elevation-2);
+        }
+
+        .btn-pill:hover {
+            background: #7a61bc;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .hero {
+            padding: 6rem 8% 4rem;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            min-height: 85vh;
+        }
+
+        .hero-content { flex: 1.2; }
+        .hero-content h1 {
+            font-size: 3.8rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-content p {
+            font-size: 1.15rem;
+            margin-bottom: 2.5rem;
+            color: rgba(230, 225, 229, 0.8);
+            max-width: 500px;
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+        .hero-image img {
+            width: 280px;
+            border-radius: 32px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+            border: 6px solid var(--surface);
+            transition: transform 0.5s ease;
+        }
+        .hero-image img:hover { transform: translateY(-10px) scale(1.02); }
+
+        .features {
+            padding: 6rem 8%;
+            background: linear-gradient(to bottom, transparent, rgba(33,31,38,0.5) 20%, transparent);
+        }
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+        }
+        .feature-card {
+            background: var(--card-bg);
+            padding: 2.5rem 2rem;
+            border-radius: var(--radius-large);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
+            backdrop-filter: blur(8px);
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            background: rgba(45, 42, 50, 0.9);
+            border-color: rgba(208, 188, 255, 0.3);
+        }
+        .feature-icon {
+            width: 56px; height: 56px;
+            background: var(--primary-container);
+            color: var(--on-primary-container);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; margin-bottom: 1.5rem;
+        }
+
+        /* ---------------- 横向滚动区域 ---------------- */
+        .screenshots {
+            padding: 4rem 0 2rem; 
+            overflow: hidden;
+        }
+
+        .horizontal-scroll {
+            display: flex;
+            gap: 24px;
+            overflow-x: auto;
+            padding: 20px 8%; 
+            scrollbar-width: none; 
+            -ms-overflow-style: none; 
+            cursor: grab; 
+        }
+        .horizontal-scroll::-webkit-scrollbar { display: none; }
+        .horizontal-scroll.active { cursor: grabbing; }
+
+        .screenshot-wrapper {
+            transition: transform 0.3s ease;
+        }
+        .screenshot-wrapper:hover {
+            transform: translateY(-5px) scale(1.02);
+            z-index: 2;
+        }
+
+        .screenshot-item {
+            flex: 0 0 auto; 
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            border: none;
+            background: transparent;
+            padding: 0;
+            font-size: 0;
+            line-height: 0;
+            pointer-events: none; 
+        }
+
+        .phone-size { height: 480px; width: auto; }
+        .pc-size { height: 360px; width: auto; }
+
+        .screenshot-item img {
+            height: 100%;
+            width: auto;
+            display: block;
+            border-radius: 24px;
+        }
+
+        /* ---------------- 单独展示区域 ---------------- */
+        .long-image-section {
+            padding: 1.5rem 8%; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .long-image-container {
+            width: 100%;
+            max-width: 800px; 
+            border-radius: 24px;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.5);
+            border: none;
+            background: transparent;
+            padding: 0;
+            font-size: 0;
+            line-height: 0;
+            overflow: hidden; 
+            transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.3s;
+        }
+        .long-image-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+        }
+
+        .long-image-container img {
+            width: 100%;
+            height: auto; 
+            display: block;
+            border-radius: 24px;
+        }
+
+        /* 下载板块 */
+        .download-section {
+            padding: 6rem 8%; text-align: center; background: rgba(0,0,0,0.2); margin-top: 4rem;
+        }
+        .download-cards {
+            display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-top: 3rem;
+        }
+        .dl-card {
+            background: var(--primary-color); padding: 2.5rem; border-radius: var(--radius-large);
+            width: 300px; text-decoration: none; color: white; transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden;
+        }
+        .dl-card.pc-dl { background: var(--surface-variant); }
+        .dl-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+        .dl-card h3 { font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .dl-card p { opacity: 0.8; font-size: 0.9rem; }
+
+        footer {
+            padding: 3rem 2rem; text-align: center; color: rgba(255,255,255,0.4); font-size: 0.85rem; border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* 移动端深度适配 */
+        @media (max-width: 850px) {
+            .hero { flex-direction: column; text-align: center; padding-top: 3rem; }
+            .hero-content h1 { font-size: 2.5rem; }
+            .hero-content p { margin: 0 auto 2rem; }
+            .hero-image img { width: 240px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            
+            .phone-size { height: 400px; }
+            .pc-size { height: 220px; }
+
+            .long-image-container, .long-image-container img, 
+            .screenshot-item, .screenshot-item img {
+                border-radius: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <nav>
+        <div class="logo">Uaoan Control</div>
+        <a href="#download" class="btn-pill">获取应用</a>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>掌控桌面，<br>从未如此丝滑。</h1>
+            <p>Uaoan Control是一款极简、强大、低延迟的跨平台极客控制软件。支持 4K 分辨率、120FPS 沉浸传屏与全自定义宏配置。</p>
+            <a href="#download" class="btn-pill" style="padding: 14px 32px; font-size: 1.1rem;">立即下载体验</a>
+        </div>
+        <div class="hero-image">
+            <img src="http://controls.uaoanlao.cn/apk1.jpg" alt="Uaoan Android App">
+        </div>
+    </section>
+
+    <section class="features">
+        <h2 class="section-title">重塑极客控制体验</h2>
+        <div class="feature-grid">
+            <div class="feature-card fade-in"><div class="feature-icon">🚀</div><h3>丝滑控制</h3><p>毫秒级延迟触控板与全自定义键鼠映射，让远程操作如同本地物理外设般精准顺畅。</p></div>
+            <div class="feature-card fade-in"><div class="feature-icon">🖥️</div><h3>沉浸传屏</h3><p>原生支持 4K 分辨率与 MSS 硬件加速截屏，解锁最高 120FPS 的极致流畅帧率。</p></div>
+            <div class="feature-card fade-in"><div class="feature-icon">🎮</div><h3>极客手势</h3><p>双指滚动、长按拖曳、复杂鼠标宏无缝深度配置，高效应对办公与高频游戏需求。</p></div>
+            <div class="feature-card fade-in"><div class="feature-icon">🌐</div><h3>纯净穿透</h3><p>动态自适应快捷键网格，完美兼容局域网极速直连与 FRP 广域网内网穿透。</p></div>
+        </div>
+    </section>
+
+    <section class="screenshots">
+        <h2 class="section-title">Android 极控端</h2>
+        <div class="horizontal-scroll fade-in">
+            <div class="screenshot-wrapper"><div class="screenshot-item phone-size"><img src="http://controls.uaoanlao.cn/apk1.jpg" alt="安卓端预览 1"></div></div>
+            <div class="screenshot-wrapper"><div class="screenshot-item phone-size"><img src="http://controls.uaoanlao.cn/apk3.jpg" alt="安卓端预览 3"></div></div>
+        </div>
+    </section>
+
+    <section class="long-image-section fade-in">
+        <div class="long-image-container">
+            <img src="http://controls.uaoanlao.cn/apk2.jpg" alt="安卓端预览 2">
+        </div>
+    </section>
+
+    <section class="long-image-section fade-in">
+        <div class="long-image-container">
+            <img src="http://controls.uaoanlao.cn/apk4.jpg" alt="安卓端预览 4">
+        </div>
+    </section>
+
+    <section class="screenshots">
+        <h2 class="section-title" style="margin-top: 2rem;">Windows 接收端</h2>
+        <div class="horizontal-scroll fade-in">
+            <div class="screenshot-wrapper"><div class="screenshot-item pc-size"><img src="http://controls.uaoanlao.cn/exe1.png" alt="PC端预览 1"></div></div>
+            <div class="screenshot-wrapper"><div class="screenshot-item pc-size"><img src="http://controls.uaoanlao.cn/exe2.png" alt="PC端预览 2"></div></div>
+            <div class="screenshot-wrapper"><div class="screenshot-item pc-size"><img src="http://controls.uaoanlao.cn/exe3.png" alt="PC端预览 3"></div></div>
+        </div>
+    </section>
+
+    <section id="download" class="download-section">
+        <h2 class="section-title">选择您的平台</h2>
+        <div class="download-cards">
+            <a href="https://gitee.com/yuxyu47/windows-controls/releases/download/1.1/Uaoan%20Control_v1.1.apk" target="_blank" class="dl-card fade-in">
+                <h3>Android 控制端</h3>
+                <p>适用于手机/平板发送控制指令</p>
+                <div style="margin-top: 15px; font-size: 0.8rem; background: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 20px;">点击下载 APK</div>
+            </a>
+            <a href="https://gitee.com/yuxyu47/windows-controls/releases/download/1.1/Uaoan%20Control_v1.1.exe" target="_blank" class="dl-card pc-dl fade-in">
+                <h3>Windows 接收端</h3>
+                <p>适用于被控制的电脑终端</p>
+                <div style="margin-top: 15px; font-size: 0.8rem; background: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 20px;">点击下载 EXE</div>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <p>Uaoan Control控制终端 | 由 七桐 开发</p>
+         <p>作者QQ：1823565614</p>
+        <p>&copy; 2026 controls.uaoanlao.cn. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // 1. 元素入场动画
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.fade-in');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            elements.forEach((el, index) => {
+                el.style.opacity = 0;
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = `all 0.6s cubic-bezier(0.2, 0, 0, 1) ${(index % 3) * 0.1}s`;
+                observer.observe(el);
+            });
+        });
+
+        // 2. 为所有横向滚动容器绑定 拖拽 滑动交互逻辑 (已移除滚轮控制)
+        const sliders = document.querySelectorAll('.horizontal-scroll');
+        
+        sliders.forEach(slider => {
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                slider.classList.add('active');
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+            });
+
+            slider.addEventListener('mouseleave', () => {
+                isDown = false;
+                slider.classList.remove('active');
+            });
+
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+                slider.classList.remove('active');
+            });
+
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 1.5; 
+                slider.scrollLeft = scrollLeft - walk;
+            });
+        });
+    </script>
+</body>
+</html>
